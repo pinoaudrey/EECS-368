@@ -1,0 +1,78 @@
+<canvas width="600" height="1000"></canvas>
+<script>
+    var results = [
+        {name: "Satisfied", count: 927, color: "lightgreen"}, // input for satisfied customers
+        {name: "Neutral", count: 463, color: "lemonchiffon"}, // input for neutral customers
+        {name: "Unsatisfied", count: 510, color: "lightsalmon"}, // input for unsatisfied customers
+        {name: "No comment", count: 102, color: "grey"} // input for customers with no comment
+    ];
+    var results2 = [
+        {name: "Very Happy", count: 63, color: "green"}, // input for very happy customers
+        {name: "Happy", count: 104, color: "lightgreen"}, // input for happy customers
+        {name: "Neutral", count: 87, color: "lightyellow"}, // input for neutral customers
+        {name: "Unhappy", count: 51, color: "lightsalmon"}, // input for unhappy customers
+        {name: "Very Unhappy", count: 26, color: "salmon"}, // input for very unhappy customers
+        {name: "No Comment", count: 18, color: "grey"} // input for customers with no comment
+    ];
+   // begin first chart
+    var cx = document.querySelector("canvas").getContext("2d"); // 2d drawing
+    var total = results.reduce(function(sum, choice) { // takes in string of result provided
+        return sum + choice.count; // counts number of input strings
+    }, 0);
+
+    var currentAngle = -0.5 * Math.PI; // sets current angle of pie chart
+    var centerX = 300, centerY = 150; // placement of center of pie-chart on document
+
+    results.forEach(function(result) { // recursive loop for each string in results
+        var sliceAngle = (result.count / total) * 2 * Math.PI; // sets angle of slice out of pie chart
+        cx.beginPath(); // starts new path
+        cx.arc(centerX, centerY, 100, currentAngle, currentAngle + sliceAngle); // sets arc of the circle
+
+        var middleAngle = currentAngle + 0.5 * sliceAngle; // sets middle angle using the
+        var textX = Math.cos(middleAngle) * 120 + centerX; // sets x degree of text from center using cos
+        var textY = Math.sin(middleAngle) * 120 + centerY; // sets y degree of text from center using sin
+        cx.textBaseline = "middle"; // sets reference of pie chart as middle
+        if (Math.cos(middleAngle) > 0) // checks side of pie chart and places text accordingly
+            cx.textAlign = "left"; // text alignment right of chart
+        else
+            cx.textAlign = "right"; // text alignment left of chart
+        cx.fillStyle = "black"; // text color
+        cx.font = "14px times new roman"; // text font and size
+        cx.fillText(result.name, textX, textY); // draws text on chart
+
+        currentAngle += sliceAngle; // re-indexes current angle after each drawn slice
+        cx.lineTo(centerX, centerY); // moves from last point to center of chart
+        cx.fillStyle = result.color; // sets piece to designated color
+        cx.fill(); // fills the pie chart with color
+    });
+    // begin second chart
+    var total = results2.reduce(function(sum, choice) { // takes in string of result provided
+        return sum + choice.count; // counts number of input strings
+    }, 0);
+
+    var currentAngle = -0.5 * Math.PI; // sets current angle of pie chart
+    var centerX = 300, centerY = 450; // placement of center of pie-chart on document
+
+    results2.forEach(function(result) { // recursive loop for each string in results2
+        var sliceAngle = (result.count / total) * 2 * Math.PI; // sets angle of slice out of pie chart
+        cx.beginPath(); // starts new path
+        cx.arc(centerX, centerY, 100, currentAngle, currentAngle + sliceAngle); // sets arc of the circle
+
+        var middleAngle = currentAngle + 0.5 * sliceAngle; // sets middle angle using the
+        var textX = Math.cos(middleAngle) * 120 + centerX; // sets x degree of text from center using cos
+        var textY = Math.sin(middleAngle) * 120 + centerY;  // sets y degree of text from center using sin
+        cx.textBaseline = "middle"; // sets reference of pie chart as middle
+        if (Math.cos(middleAngle) > 0) // checks side of pie chart and places text accordingly
+            cx.textAlign = "left"; // text alignment right of chart
+        else
+            cx.textAlign = "right"; // text alignment left of chart
+        cx.fillStyle = "black"; // text color
+        cx.font = "14px times new roman"; // text font and size
+        cx.fillText(result.name, textX, textY); // draws text on chart
+
+        currentAngle += sliceAngle; // re-indexes current angle after each drawn slice
+        cx.lineTo(centerX, centerY); // moves from last point to center of chart
+        cx.fillStyle = result.color; // sets piece to designated color
+        cx.fill(); // fills the pie chart with color
+    });
+</script>
