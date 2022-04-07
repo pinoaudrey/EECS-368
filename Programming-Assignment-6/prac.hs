@@ -28,20 +28,3 @@ prop_positions' x xs = length xs > 0 ==> positions x xs == positions' x xs
 -- 7. scalar product:
 scalarproduct :: [Int] -> [Int] -> Int
 scalarproduct xs ys = sum [x * y | (x,y) <- zip xs ys]
-
-unittest_scalarproduct = "scalarproduct" ~: scalarproduct [1,2,3] [4,5,6] ~?= 32
-
-
-unittests = Test.HUnit.test [
-     unittest_perfects
-    ,unittest_5
-    ,unittest_find_0
-    ,unittest_find_1
-    ,unittest_scalarproduct
-    ]
-
-runtests = do runTestTT unittests
-              quickCheckWith stdArgs {maxSuccess=7} prop_replicate'
-              quickCheckWith stdArgs {maxSuccess=7} prop_replicate''
-              quickCheckWith stdArgs {maxSuccess=7} prop_pyths
-
