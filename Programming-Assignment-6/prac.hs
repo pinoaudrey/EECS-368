@@ -18,10 +18,6 @@ positions' :: Eq a => a -> [a] -> [Int]
 positions' x xs = find x (zip xs [0..n])
     where n = length xs - 1
 
-unittest_find_0 = "find -> some results" ~: find 'b' [('a',1),('b',2),('c',3),('b',4)] ~?= [2,4]
-unittest_find_1 = "find -> empty" ~: find 'd' [('a',1),('b',2),('c',3),('b',4)] ~?= []
-
-
 prop_positions' x xs = length xs > 0 ==> positions x xs == positions' x xs
         where types = (x :: Int, xs :: [Int])
 
