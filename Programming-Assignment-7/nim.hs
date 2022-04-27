@@ -1,62 +1,78 @@
--- represents the initial board of the game
-type Board = [Int] 
-initial :: Board 
-initial = [5,4,3,2,1] 
+-- initial game board
+type Board = [Int]
 
--- function that return the next player who has a turn
+initial :: Board
+initial = [5,4,3,2,1]
+
+-- returns the player with next turn
 next :: Int -> Int
 next 1 = 2
 next 2 = 1
 
--- utility function to print a newline to the console
+-- checks if game is over 
+finished :: Board -> Bool
+finished = all (== 0)
+
+-- checks if move is allowed/valid or not
+valid :: Board -> Int -> Int -> Bool
+valid board row num = board !! (row-1) >= num
+
+-- updates board with move 
+move :: Board -> Int -> Int -> Board
+move board row num = [update r n | (r,n) <- zip [1..] board]
+   where update r n = if r == row then n-num else n
+
+--  builds row of "*" characters
+putRow :: Int -> Int -> IO ()
+putRow row num = do putStr (show row)
+                    putStr ": "
+                    putStrLn (concat (replicate num "* "))
+
+-- prints the board onto the console
+putBoard :: Board -> IO ()
+putBoard [a,b,c,d,e] = do putRow 1 a
+                          putRow 2 b
+                          putRow 3 c
+                          putRow 4 d
+                          putRow 5 e
+
+-- recieves input and checks if it is a digit and return it, if not asks for input again
+getDigit :: String -> IO Int
+getDigit prompt = do putStr prompt
+                     x <- getChar
+                     newline
+                     if isDigit x then
+                        return (digitToInt x)
+                     else
+                        do putStrLn "ERROR: Invalid digit"
+                           getDigit prompt
+
 newline :: IO ()
 newline = putChar '\n'
 
--- takes an input and checks if it is a digit and return it, if not asks for input again
-getDigit :: String -> IO Int
-getDigit message = do putStr message
-                      x <- getChar
-                      newline
-                      if isDigit x then
-                        do return (digitToInt x)
-                      else 
-                        do putStrLn "Invalid input"
-                           getDigit message
+-- runs Game of nim
 
--- utility function to print the board onto the console
-printBoard :: [Int] -> IO ()
-printBoard board = putStr $ unlines [(show row) ++ ": " ++ replicate stars '*'| (stars, row) <- zip board [1..length board]]
+play :: Board -> Int -> IO ()
+play board player =
+   do newline
+      putBoard board
+      if finished board then
+         do newline
+            putStr "Player "
+            putStr (show (next player))
+            putStrLn " wins!!"
+      else  
+         do newline
+            putStr "Player "
+            putStrLn (show player)
+            row <- getDigit "Enter a row number: "
+            num <- getDigit "Stars to remove : "
+            if valid board row num then
+               play (move board row num) (next player)
+            else
+               do newline
+                  putStrLn "ERROR: Invalid move"
+                  play board player
 
--- checks the end condition for the game
-checkEnd :: [Int] -> Bool
-checkEnd board = all (==0) board
-
--- checks whether a move is valid or not
-checkValidMove :: [Int] -> Int -> Int -> Bool
-checkValidMove board row rStars = if (board !! (row - 1)) >= rStars then True else False
-
--- generates a new board once a move has been played
-generateNewBoard :: [Int] -> Int -> Int -> [Int]
-generateNewBoard board row rStars = [if irow == row then stars - rStars else stars | (stars, irow) <- zip board [1..length board]]
-
--- makes use of the do notation to run a loop for the game
-play :: [Int] -> Int -> IO ()
-play board player = do printBoard board
-                          if checkEnd board then
-                            do putStr "Player "
-                               putStr (show (next player))
-                               putStrLn " wins!"
-                          else
-                            do putStr "Player "
-                               putStrLn (show player)
-                               row <- getDigit "Enter row number: "
-                               stars <- getDigit "Stars to remove: "
-                               if checkValidMove board row stars then
-                                 playnim (generateNewBoard board row stars) (next player)
-                               else
-                                 do putStrLn "Invalid move"
-                                    playnim board player
-                
--- call this function to start the game with the initial conditions
-nim :: IO () 
-nim = play initial 1 
+nim :: IO ()
+nim = play initial 1
