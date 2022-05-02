@@ -1,3 +1,5 @@
+import Data.Char (isDigit, digitToInt)
+
 -- initial game board
 type Board = [Int]
 
